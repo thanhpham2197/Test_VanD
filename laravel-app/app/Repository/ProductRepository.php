@@ -26,6 +26,8 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
     }
     /**
      * Get list product
+     * 
+     * @return \Illuminate\Database\Eloquent\Collection;
      */
     public function getList($request)
     {

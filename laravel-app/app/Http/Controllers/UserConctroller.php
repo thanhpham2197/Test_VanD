@@ -90,6 +90,7 @@ class UserConctroller extends Controller
             }
             return $this->successReponse();
         } catch (\Exception $exception) {
+            
             return $this->errorResponse($exception, HttpResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
 

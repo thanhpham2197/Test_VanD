@@ -12,6 +12,7 @@ use Illuminate\Http\Response;
 class ProductController extends Controller
 {
     use ApiResponse;
+
     private $productRepo;
 
     /**
@@ -84,8 +85,10 @@ class ProductController extends Controller
             if(!$productUpdated) {
                 return $this->errorResponse('Update product not success', Response::HTTP_NOT_FOUND);
             }
+
             return $this->successReponse($productUpdated);
         } catch (\Exception $exception) {
+
             return $this->errorResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -105,6 +108,7 @@ class ProductController extends Controller
 
             return $this->successReponse();
         } catch (\Exception $exception) {
+            
             return $this->errorResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -118,8 +122,10 @@ class ProductController extends Controller
         try {
             $id = request()->route('id');
             $store = $this->productRepo->detail($id);
+
             return $this->successReponse($store);
         } catch (\Exception $exception) {
+
             return $this->errorResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

@@ -36,8 +36,10 @@ class StoreController extends Controller
     {
         try {
             $storeList = $this->storeRepo->getList($request);
+
             return $this->successReponse($storeList);
         } catch (\Exception $exception) {
+
             return $this->errorResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -59,8 +61,10 @@ class StoreController extends Controller
                 'user_id' => $userId
             ];
             $userCreated = $this->storeRepo->create($data);
+
             return $this->successReponse($userCreated);
         } catch (\Exception $exception) {
+
             return $this->errorResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -84,8 +88,10 @@ class StoreController extends Controller
             if(!$storeUpdated) {
                 return $this->errorResponse('Store not exist!', Response::HTTP_NOT_FOUND);
             }
+
             return $this->successReponse($storeUpdated);
         } catch (\Exception $exception) {
+
             return $this->errorResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -105,6 +111,7 @@ class StoreController extends Controller
 
             return $this->successReponse();
         } catch (\Exception $exception) {
+
             return $this->errorResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -118,8 +125,10 @@ class StoreController extends Controller
         try {
             $id = request()->route('id');
             $store = $this->storeRepo->detail($id);
+
             return $this->successReponse($store);
         } catch (\Exception $exception) {
+            
             return $this->errorResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
