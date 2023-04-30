@@ -2,12 +2,16 @@
 
 namespace App\Exceptions;
 
+use App\Trait\ApiResponse;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Response;
+use Illuminate\Validation\ValidationException;
 use Throwable;
 
 class Handler extends ExceptionHandler
 {
+    use ApiResponse;
     /**
      * A list of exception types with their corresponding custom log levels.
      *
@@ -59,5 +63,28 @@ class Handler extends ExceptionHandler
                 ]
                 ], 401
             );
+    }
+
+    /**
+     * Reder all exception
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @param \Throwable $e
+     * 
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function render($request, Throwable $e)
+    {
+        $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
+        switch (true) {
+            case $e instanceof ValidationException:
+                $statusCode = Response::HTTP_UNPROCESSABLE_ENTITY;
+                break;
+            case $e instanceof \Exception:
+                break;
+            default:
+                break;
+        }
+        return $this->errorResponse($e, $statusCode);
     }
 }

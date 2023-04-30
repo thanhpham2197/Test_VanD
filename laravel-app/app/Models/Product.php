@@ -32,6 +32,13 @@ class Product extends Model
             $description = $request->description;
             $query->where('description', 'like', "%{$description}%");
         }
-
+    }
+    
+    /**
+     * Get store
+     */
+    public function store()
+    {
+        return $this->belongsTo(Store::class);
     }
 }

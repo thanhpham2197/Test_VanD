@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreateProductRequest;
 use App\Http\Requests\SearchRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Http\Resources\ProductListResource;
 use App\Repository\Interface\ProductRepositoryInterface;
 use App\Trait\ApiResponse;
 use Illuminate\Http\Response;
@@ -32,12 +33,8 @@ class ProductController extends Controller
      */
     public function list(SearchRequest $request)
     {
-        try {
-            $storeList = $this->productRepo->getList($request);
-            return $this->successReponse($storeList);
-        } catch (\Exception $exception) {
-            return $this->errorResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        $productList = $this->productRepo->getList($request);
+        return $this->successReponse(ProductListResource::collection($productList));
     }
     
     /**
@@ -49,21 +46,14 @@ class ProductController extends Controller
      */
     public function create(CreateProductRequest $request)
     {
-        try {
-            $data = [
-                'name' => $request->name,
-                'description' => $request->description,
-                'store_id' => $request->store_id
-            ];
-            $userCreated = $this->productRepo->create($data);
-            if(!$userCreated) {
-                return $this->errorResponse('Store not exist!');
-            }
+        $data = [
+            'name' => $request->name,
+            'description' => $request->description,
+            'store_id' => $request->store_id
+        ];
+        $productCreated = $this->productRepo->create($data);
 
-            return $this->successReponse($userCreated);
-        } catch (\Exception $exception) {
-            return $this->errorResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        return $this->successReponse($productCreated);
     }
     /**
      * Update store
@@ -74,23 +64,18 @@ class ProductController extends Controller
      */
     public function update(UpdateProductRequest $request)
     {
-        try {
-            $data = [
-                'name' => $request->name,
-                'address' => $request->address,
-                'store_id' => $request->store_id
-            ];
+        $data = [
+            'name' => $request->name,
+            'address' => $request->address,
+            'store_id' => $request->store_id
+        ];
 
-            $productUpdated = $this->productRepo->update(request()->route('id'), $data);
-            if(!$productUpdated) {
-                return $this->errorResponse('Update product not success', Response::HTTP_NOT_FOUND);
-            }
-
-            return $this->successReponse($productUpdated);
-        } catch (\Exception $exception) {
-
-            return $this->errorResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
+        $productUpdated = $this->productRepo->update(request()->route('id'), $data);
+        if(!$productUpdated) {
+            return $this->errorResponse(__('validation.product_update_fail'), Response::HTTP_NOT_FOUND);
         }
+
+        return $this->successReponse($productUpdated);
     }
 
     /**
@@ -100,17 +85,12 @@ class ProductController extends Controller
      */
     public function delete()
     {
-        try {
-            $id = request()->route('id');
-            if(!$this->productRepo->delete($id)) {
-                return $this->errorResponse('Product not exist!', Response::HTTP_NOT_FOUND);
-            }
-
-            return $this->successReponse();
-        } catch (\Exception $exception) {
-            
-            return $this->errorResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
+        $id = request()->route('id');
+        if(!$this->productRepo->delete($id)) {
+            return $this->errorResponse(__('validation.product_exist'), Response::HTTP_NOT_FOUND);
         }
+
+        return $this->successReponse();
     }
     /**
      * View detail
@@ -119,14 +99,9 @@ class ProductController extends Controller
      */
     public function detail()
     {
-        try {
-            $id = request()->route('id');
-            $store = $this->productRepo->detail($id);
+        $id = request()->route('id');
+        $product = $this->productRepo->detail($id);
 
-            return $this->successReponse($store);
-        } catch (\Exception $exception) {
-
-            return $this->errorResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        return $this->successReponse($product);
     }
 }

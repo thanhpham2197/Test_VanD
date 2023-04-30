@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreateStoreRequest;
 use App\Http\Requests\SearchRequest;
 use App\Http\Requests\UpdateStoreRequest;
+use App\Http\Resources\StoreListResource;
 use App\Repository\Interface\StoreRepositoryInterface;
 use App\Trait\ApiResponse;
 use Illuminate\Http\Response;
@@ -34,14 +35,9 @@ class StoreController extends Controller
      */
     public function list(SearchRequest $request)
     {
-        try {
-            $storeList = $this->storeRepo->getList($request);
+        $storeList = $this->storeRepo->getList($request);
 
-            return $this->successReponse($storeList);
-        } catch (\Exception $exception) {
-
-            return $this->errorResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        return $this->successReponse(StoreListResource::collection($storeList));
     }
     
     /**
@@ -53,20 +49,14 @@ class StoreController extends Controller
      */
     public function create(CreateStoreRequest $request)
     {
-        try {
-            $userId = auth('api')->user()->id;
-            $data = [
-                'name' => $request->name,
-                'address' => $request->address,
-                'user_id' => $userId
-            ];
-            $userCreated = $this->storeRepo->create($data);
-
-            return $this->successReponse($userCreated);
-        } catch (\Exception $exception) {
-
-            return $this->errorResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        $userId = auth('api')->user()->id;
+        $data = [
+            'name' => $request->name,
+            'address' => $request->address,
+            'user_id' => $userId
+        ];
+        $userCreated = $this->storeRepo->create($data);
+        return $this->successReponse($userCreated);
     }
     /**
      * Update store
@@ -77,23 +67,18 @@ class StoreController extends Controller
      */
     public function update(UpdateStoreRequest $request)
     {
-        try {
-            $userId = auth('api')->user()->id;
-            $data = [
-                'name' => $request->name,
-                'address' => $request->address,
-                'user_id' => $userId
-            ];
-            $storeUpdated = $this->storeRepo->update(request()->route('id'), $data);
-            if(!$storeUpdated) {
-                return $this->errorResponse('Store not exist!', Response::HTTP_NOT_FOUND);
-            }
-
-            return $this->successReponse($storeUpdated);
-        } catch (\Exception $exception) {
-
-            return $this->errorResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
+        $userId = auth('api')->user()->id;
+        $data = [
+            'name' => $request->name,
+            'address' => $request->address,
+            'user_id' => $userId
+        ];
+        $storeUpdated = $this->storeRepo->update(request()->route('id'), $data);
+        if(!$storeUpdated) {
+            return $this->errorResponse(__('validation.store_exist'), Response::HTTP_NOT_FOUND);
         }
+
+        return $this->successReponse($storeUpdated);
     }
 
     /**
@@ -103,17 +88,12 @@ class StoreController extends Controller
      */
     public function delete()
     {
-        try {
-            $id = request()->route('id');
-            if(!$this->storeRepo->delete($id)) {
-                return $this->errorResponse('Store not exist!', Response::HTTP_NOT_FOUND);
-            }
-
-            return $this->successReponse();
-        } catch (\Exception $exception) {
-
-            return $this->errorResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
+        $id = request()->route('id');
+        if(!$this->storeRepo->delete($id)) {
+            return $this->errorResponse(__('validation.store_exist'), Response::HTTP_NOT_FOUND);
         }
+
+        return $this->successReponse();
     }
     /**
      * View detail
@@ -122,14 +102,9 @@ class StoreController extends Controller
      */
     public function detail()
     {
-        try {
-            $id = request()->route('id');
-            $store = $this->storeRepo->detail($id);
+        $id = request()->route('id');
+        $store = $this->storeRepo->detail($id);
 
-            return $this->successReponse($store);
-        } catch (\Exception $exception) {
-            
-            return $this->errorResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        return $this->successReponse($store);
     }
 }

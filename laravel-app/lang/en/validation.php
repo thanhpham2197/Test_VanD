@@ -13,6 +13,10 @@ return [
     |
     */
 
+    'store_exist' => 'Store not exist!',
+    'product_exist' => 'Product not exist!',
+    'product_update_fail' => 'Update product not success!',
+
     'accepted' => 'The :attribute must be accepted.',
     'accepted_if' => 'The :attribute must be accepted when :other is :value.',
     'active_url' => 'The :attribute is not a valid URL.',
